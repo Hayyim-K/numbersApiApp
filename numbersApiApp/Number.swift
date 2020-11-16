@@ -5,7 +5,7 @@
 //  Created by vitasiy on 16.11.2020.
 //
 
-import UIKit
+import Foundation
 
 struct Number: Decodable {
     let text: String?
@@ -13,13 +13,19 @@ struct Number: Decodable {
     let found: Bool?
     let type: String?
     
-    static func getData(textField: UITextField, label: UILabel) {
-        let data = NetworkManager.shared
-        data.getNetworkData(textField: textField, label: label)
-    }
+//    static func getData(textField: UITextField, label: UILabel) {
+//        let data = NetworkManager.shared
+//        data.getNetworkData(textField: textField, label: label)
+//    }
+//
+//    static func getRandomData(label: UILabel) {
+//        let data = NetworkManager.shared
+//        data.getRandom(label: label)
+//    }
     
-    static func getRandomData(label: UILabel) {
+    static func getData(numberFromTextField: String) -> Number {
         let data = NetworkManager.shared
-        data.getRandom(label: label)
+        data.getNetworkData2(numberFromTextField: numberFromTextField)
+        return data.num ?? (Number(text: "Ошибка", number: 0, found: true, type: ""))
     }
 }

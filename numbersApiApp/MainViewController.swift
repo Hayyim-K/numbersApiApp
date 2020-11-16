@@ -15,8 +15,19 @@ class MainViewController: UIViewController {
     @IBOutlet weak var numberTextField: UITextField!
     @IBOutlet weak var contextLabel: UILabel!
     
+    
+    
+    
+    
     @IBAction func tryButtonPressed() {
-        Number.getData(textField: numberTextField, label: contextLabel)
+//        Number.getData(textField: numberTextField, label: contextLabel)
+        let number = numberTextField.text ?? "random"
+        let data = Number.getData(numberFromTextField: number)
+        
+        contextLabel.text = data.text
+        
+        
+        
 //        let stringURL = "http://numbersapi.com/\(numberTextField.text ?? "random")?json"
 //
 //        guard let url = URL(string: stringURL) else { return }
@@ -57,7 +68,11 @@ class MainViewController: UIViewController {
     
     @IBAction func randomButtonPressed() {
         
-        Number.getRandomData(label: contextLabel)
+//        Number.getRandomData(label: contextLabel)
+        
+        let number = "random"
+        let data = Number.getData(numberFromTextField: number)
+        contextLabel.text = data.text
         
 //        let stringURL = "http://numbersapi.com/random?json"
 //
