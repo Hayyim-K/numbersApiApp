@@ -16,6 +16,20 @@ class MainViewController: UIViewController {
     @IBOutlet weak var contextLabel: UILabel!
     
     
+    private func translation(text: String) {
+        NetworkManager.shared.getTranslate3(incomingText: text) {
+            resultData in
+            DispatchQueue.main.async {
+                var text = "\(resultData)"
+                let fromIndex = text.lastIndex(of: "(") ?? text.startIndex
+                text = String(text.suffix(from: fromIndex)).components(separatedBy: "(").last?.components(separatedBy: ")").first ?? "."
+                print(text)
+                
+                self.contextLabel.text = text
+            }
+        }
+    }
+    
     @IBAction func tryButtonPressed() {
         
         let numberFromTextField = numberTextField.text
@@ -24,18 +38,10 @@ class MainViewController: UIViewController {
                 number in
                 DispatchQueue.main.async {
                     self.number = number
-                    self.contextLabel.text = self.number.text
-                }
-           
-                //ЗДЕСЬ ПЛАНИРОВАЛОСЬ ВЫЗЫВАТЬ МЕТОД getTranslate, который передавал бы английский текст в специальную модель, паковал в JSON и отправлял для перевода POST запростом ...
-                
-                NetworkManager.shared.getTranslate2(incomingText: "hello") {
-                text in
-                DispatchQueue.main.async {
-                    self.contextLabel.text = "\(text)"
-                }
                 }
                 
+                let text = number.text ?? "error"
+                self.translation(text: text)
             }
             
         } else {
@@ -49,9 +55,8 @@ class MainViewController: UIViewController {
         Number.getData(numberFromTextField: "random") {
             number in
             self.number = number
-            DispatchQueue.main.async {
-                self.contextLabel.text = self.number.text
-            }
+            let text = self.number.text ?? "some problem"
+            self.translation(text: text)
         }
     }
     

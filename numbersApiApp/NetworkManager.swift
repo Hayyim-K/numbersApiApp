@@ -12,9 +12,84 @@ class NetworkManager {
     
     static let shared = NetworkManager()
     
+    func getTranslate3(incomingText: String?,
+                           outgoingText: @escaping (Any) -> Void) {
+            
+            let headers = [
+                "content-type": "application/json",
+                "X-RapidAPI-Key": "b22949332fmsh58b1955eaff8bf1p1422ecjsn3318e332328d",
+                "X-RapidAPI-Host": "rapid-translate-multi-traduction.p.rapidapi.com"
+            ]
+            let parameters = [
+                "from": "en",
+                "to": "uk",
+                "e": "",
+                "q": ["\(incomingText ?? "Hello!")"]
+            ] as [String : Any]
+            
+            guard let postData = try? JSONSerialization.data(withJSONObject: parameters, options: []) else {return}
+            
+            guard let url = URL(string:  "https://rapid-translate-multi-traduction.p.rapidapi.com/t") else {return}
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.allHTTPHeaderFields = headers
+            request.httpBody = postData
+            
+            URLSession.shared.dataTask(with: request) {
+                (data, _, error) in
+                
+                if let error = error {
+                    print(error)
+                    return
+                }
+                
+                if let data = data {
+                    let resultData = try? JSONSerialization.jsonObject(with: data, options: [])
+                    print("DATA DATA DATA: \(String(describing: resultData))")
+                    outgoingText(resultData as Any)
+                }
+            }.resume()
+        }
+        
+        
+        func getNetworkData(numberFromTextField: String,
+                            completion: @escaping (Number) -> Void) {
+            
+            let stringURL = "http://numbersapi.com/\(numberFromTextField)?json"
+            
+            guard let url = URL(string: stringURL) else { return }
+            
+            URLSession.shared.dataTask(with: url) { (data, response, error) in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                
+                if let response = response {
+                    print(response)
+                }
+                
+                guard let data = data else { return }
+                
+                do {
+                    let number = try JSONDecoder().decode(Number.self, from: data)
+                    completion(number)
+                    print(number)
+                    
+                } catch let error {
+                    print(error)
+                }
+            }.resume()
+            
+        }
+    
+// MARK: trash
+    
     //ЧеРЕЗ GOOGLE API TRANSLATE ... ЭТОТ СЕТЕВОЙ ЗАПРОС ИНИЦИАЛИЗИРУЕТ ЗАГРУЗКУ ТЕКСТОВОГО ФАЙЛА С ПЕРЕВОДОМ... НО ГУГЛ СТАЛ ЗАПРАШИВАТЬ КАПЧУ...
     func getTranslate(incomingText: String?,
                       outgoingText: @escaping (String) -> Void) {
+        
+        
         
         let stringURL = "http://translate.google.ru/translate_a/t?client=x&text=\(incomingText ?? "problem")&hl=en&sl=en&tl=ru"
         
@@ -69,24 +144,24 @@ class NetworkManager {
                    method: .post,
                    parameters: translateTextModel,
                    headers: HTTPHeaders([header, apiKey]))
-            .validate()
-            .responseDecodable(of: Translate.self) { respose in
-                switch respose.result {
+        .validate()
+        .responseDecodable(of: Translate.self) { respose in
+            switch respose.result {
                 
-                case .success(let translate):
-                    let translateTextModel2 = Translate(
-                        targetLanguageCode: translate.targetLanguageCode,
-                        texts: translate.texts
-                    )
-                    
-                    print(translateTextModel2)
-                    let text = translateTextModel2.texts
-                    outgoingText(text)
-                    
-                case .failure(let error):
-                    print(error)
-                }
+            case .success(let translate):
+                let translateTextModel2 = Translate(
+                    targetLanguageCode: translate.targetLanguageCode,
+                    texts: translate.texts
+                )
+                
+                print(translateTextModel2)
+                let text = translateTextModel2.texts
+                outgoingText(text)
+                
+            case .failure(let error):
+                print(error)
             }
+        }
         
         
         // ЕСЛИ БЕЗ AF:
@@ -129,37 +204,7 @@ class NetworkManager {
         //        }.resume()
     }
     
-    func getNetworkData(numberFromTextField: String,
-                        completion: @escaping (Number) -> Void) {
-        
-        let stringURL = "http://numbersapi.com/\(numberFromTextField)?json"
-        
-        guard let url = URL(string: stringURL) else { return }
-        
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            if let error = error {
-                print(error)
-                return
-            }
-            
-            if let response = response {
-                print(response)
-            }
-            
-            guard let data = data else { return }
-            
-            do {
-                let number = try JSONDecoder().decode(Number.self, from: data)
-                completion(number)
-                print(number)
-                
-            } catch let error {
-                print(error)
-            }
-            
-        }.resume()
-        
-    }
+    
     
     private init() {}
     

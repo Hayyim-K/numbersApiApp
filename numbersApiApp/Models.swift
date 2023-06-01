@@ -24,21 +24,13 @@ struct Number: Codable {
 }
 
 struct Translate: Codable {
-//    let sourceLanguageCode: String?
     let targetLanguageCode: String?
-//    let format: String?
     let texts: [String?]
-//    let folderId: String?
 
 }
 
 struct AnswerFromNetwork: Codable {
     let translations: [Content]
-    
-//    init(content: [String: Any]) {
-//        translations = content["text"] as? String?
-//
-//    }
 }
 
 struct Content: Codable {
